@@ -1,8 +1,44 @@
+<img src="assets/icon.png" width="112" align="left" hspace="16" vspace="6" alt="icon">
+
 # 简笔画涂鸦 · astrbot_plugin_svg_doodle
 
 > 她写 SVG，程序渲染成蜡笔简笔画 —— **不经过任何生图模型**。
 
 让她亲手画一张涂鸦给自己、给你、给群里。模型只负责写矢量代码，渲染、加纸张质感、签名、存档全由程序完成。
+
+<br clear="left">
+
+---
+
+## 画出来长什么样
+
+下面 6 张**全部由本插件生成**，没有任何一张经过生图模型——就是模型写完 SVG、cairosvg 渲染、PIL 上蜡笔质感后的原始输出。
+
+<table>
+<tr>
+<td align="center"><img src="assets/showcase_1.jpg" width="240"><br><sub>Q版鲸鱼娘 · 捧白米饭</sub></td>
+<td align="center"><img src="assets/showcase_2.jpg" width="240"><br><sub>Q版拉布拉多 · 吐舌摇尾</sub></td>
+<td align="center"><img src="assets/showcase_3.jpg" width="240"><br><sub>深夜敲代码 · 台灯与星空</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="assets/showcase_4.jpg" width="240"><br><sub>戴着耳机听歌 · 闭眼摇摆</sub></td>
+<td align="center"><img src="assets/showcase_5.jpg" width="240"><br><sub>坐在礁石上看海</sub></td>
+<td align="center"><img src="assets/showcase_6.jpg" width="240"><br><sub>抱着小狗 · 单词本与白米饭</sub></td>
+</tr>
+</table>
+
+对应的 `subject` 原句（喂给模型的就这一句）：
+
+| 图 | subject |
+|---|---|
+| 1 | `Q版三头身鲸鱼娘正面站着，圆脸圆身子，深海蓝蓬松长发，头顶一根呆毛，头侧一对鲸鱼鳍状耳朵，穿深蓝底白花边女仆装，双手捧一碗冒热气的白米饭，脸上带笑` |
+| 2 | `一只Q版拉布拉多犬，奶黄色短毛，圆圆的脸，耷拉的耳朵，黑鼻子，吐着粉舌头笑，四条短腿站在草地上，尾巴翘起来摇着` |
+| 3 | `一个Q版男生，短发，穿宽松连帽衫，盘腿坐在电脑前敲键盘，屏幕的光打在脸上，桌上放着一盒炸鸡和一杯饮料，身后窗外是深夜的星空，整体是温暖昏暗的色调` |
+| 4 | `戴着耳机听歌，闭着眼睛摇摆` |
+| 5 | `坐在礁石上看海` |
+| 6 | `一个可爱的女孩子，抱着一条小狗，旁边放着单词本和白米饭` |
+
+每张右下角都自动签上 `— 落落 2026.10.30`。全部 768×768，单张 **10~17 秒**出图。
 
 ---
 
@@ -44,9 +80,14 @@
 
 ```bash
 cd /path/to/astrbot/data/plugins
-git clone https://github.com/yangtuoor/FIIIIX_PLUGIN.git
-# 把 astrbot_plugin_svg_doodle 目录拷出来放到 data/plugins/ 下
+git clone https://github.com/yangtuoor/astrbot_plugin_svg_doodle.git
 ```
+
+插件目录本身就在仓库根上，clone 下来直接就是 `astrbot_plugin_svg_doodle/`。
+
+### 方式三：下载压缩包
+
+不想用 git 就下 [最新 release](https://github.com/yangtuoor/astrbot_plugin_svg_doodle/releases/latest) 里的 `astrbot_plugin_svg_doodle-v1.0.0.zip`，解压到 `data/plugins/` 即可。
 
 ### 依赖
 
@@ -98,6 +139,29 @@ apt install -y fonts-noto-cjk
 ```
 
 她会调用 `recall_doodle` 按关键词查画册。
+
+### 更多可用说法
+
+| 你说 | 实际发生的事 |
+|---|---|
+| `画一朵在风里摇的蒲公英` | `auto`，画成普通人画法，不会变成角色自己 |
+| `给自己画张像` | `self`，注入 `character_desc` 的外形 |
+| `画一下老大在喝可乐` | `other`，切「普通人画法 + 禁止清单」 |
+| `再画一张，换个姿势` | 重新跑一次 `draw_doodle`，与上一张无关 |
+| `之前画过哪些狗？` | `recall_doodle` 关键词 `狗`，从画册里捞出来 |
+| `把刚才那张发我` | 走画册取最近一张原图 |
+
+**提示**：`subject` 写得越具体越准。`坐在礁石上看海` 这种短句能出图，但 `坐在礁石上看海，一手撑地一手遮阳，尾巴盘在脚边` 会明显更贴你想要的样子。
+
+### 效果对照：同一句话不同模型
+
+同一句 `坐在礁石上看海`，不同模型差别很大（实测）：
+
+| 模型 | 结果 |
+|---|---|
+| `openai/deepseek-chat`（FreeSeek） | 8~17s，SVG 6~9KB，上色准，**推荐** |
+| `dashscope/qwen3.6-flash` | 只画得出一个圆 |
+| `dashscope/qwen3.7-max` | 12~19s，经常超时 |
 
 ---
 
@@ -287,6 +351,11 @@ AGPL-3.0
 ---
 
 ## 更新日志
+
+### v1.0.1
+
+- README 补 6 张实拍示例与 `subject` 原句对照
+- 加项目 icon（`assets/icon.png`）
 
 ### v1.0.0
 
