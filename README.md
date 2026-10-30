@@ -354,6 +354,11 @@ AGPL-3.0
 
 ## 更新日志
 
+### v1.0.2
+
+- **加插件图标 `logo.png`**（512×512，拉布拉多，圆角 20%）
+- AstrBot 面板与插件市场固定读取插件根目录的 `logo.png`（`core/star/star_manager.py:213` 硬编码），不是 `metadata.yaml` 字段——之前没这个文件，面板上显示的是默认星星图标
+
 ### v1.0.1
 
 - README 补 6 张实拍示例与 `subject` 原句对照
