@@ -1,0 +1,13 @@
+name: astrbot_plugin_svg_doodle
+display_name: 简笔画涂鸦
+short_desc: 她写 SVG，程序渲染成蜡笔简笔画——不用生图模型
+author: yangtuoor
+version: 1.0.0
+desc: 让 bot 用 SVG 手写儿童蜡笔画风格的涂鸦；支持画册浏览、按关键词翻旧画、签名日期、蜡笔纹理后处理
+repo: "https://github.com/yangtuoor/FIIIIX_PLUGIN"
+astrbot_version: ">=4.16,<5"
+support_platforms:
+  - aiocqhttp
+  - telegram
+  - discord
+  - webchat
