@@ -1,0 +1,177 @@
+{
+  "provider_id": {
+    "description": "画图用的大模型",
+    "type": "string",
+    "default": "",
+    "hint": "下拉里列出 AstrBot 已配好的所有对话模型。想用 AstrBot 没有的，选「自定义」并在下面两项填地址与 Key。留空=跟随当前会话默认模型",
+    "_special": "select_provider",
+    "options": []
+  },
+  "custom_model_name": {
+    "description": "自定义模型名",
+    "type": "string",
+    "default": "",
+    "hint": "仅当上面选「自定义」时生效。例如 deepseek-chat、qwen3-max、gpt-4o-mini"
+  },
+  "custom_api_base": {
+    "description": "自定义 API 地址",
+    "type": "string",
+    "default": "",
+    "hint": "OpenAI 兼容端点，例如 https://api.deepseek.com/v1 或 http://127.0.0.1:18900/v1"
+  },
+  "custom_api_key": {
+    "description": "自定义 API Key",
+    "type": "string",
+    "default": "",
+    "hint": "本地免鉴权的服务（如 FreeSeek）可填任意字符串，例如 sk-anything"
+  },
+  "custom_extra_body": {
+    "description": "额外请求参数（JSON）",
+    "type": "text",
+    "default": "",
+    "hint": "可选。合并进请求体，例如 {\"temperature\": 0.8, \"max_tokens\": 8000}"
+  },
+  "character_name": {
+    "description": "角色名称",
+    "type": "string",
+    "default": "鲸鱼娘",
+    "hint": "画里主角的名字，会写进提示词"
+  },
+  "character_desc": {
+    "description": "角色外形描述",
+    "type": "text",
+    "default": "圆脑袋，两个小圆点当眼睛，一个向上弯的弧线当笑脸，两块粉色腮红。深蓝色头发盖住头顶大半，头顶翘一根小呆毛。头顶白色蕾丝小帽子。头两侧各一个鲸鱼鳍耳朵（小三角形，尖朝外，深蓝）。头下方紧接身体：蓝色梯形裙子，白色围裙。身后一条鲸鱼尾巴。两条竖线当腿，脚上两个小椭圆当鞋。",
+    "hint": "描述角色的外形特征，每次画图都会带上。建议用「圆脑袋…两个小圆点当眼睛…」这种画法描述，而不是外貌形容",
+    "obvious_hint": true
+  },
+  "style_desc": {
+    "description": "画风描述",
+    "type": "text",
+    "default": "儿童画风，像 6~8 岁小朋友用蜡笔画的。线条歪歪扭扭，不要求精确对称。所有形状用粗线条描边（stroke-width 5~7），深色描边。填充是蜡笔涂色感，颜色可以涂出界一点。不要精确的椭圆和圆，用 path 多点折线模拟手绘的圆。",
+    "hint": "整张图的画风基调，会影响所有生成的图"
+  },
+  "body_constraint": {
+    "description": "身体结构约束",
+    "type": "text",
+    "default": "头和身体必须连在一起：头直接坐在身体上，头和身体重叠 20px，不能有任何空隙。千万不要画脖子、短竖线、连接线。绝对不能出现「头悬空，中间断开」的情况。必须按这个顺序画：1) 先画身体和腿 2) 再画头盖在身体上面。头的下沿要低于身体的上沿 20px。人物总高 380px，头的直径 110px，三头身。人物完整可见，脚必须画出来。先画背景，再画人物，人物不要被背景盖住。",
+    "hint": "这一段是画人最容易出错的地方，一般不需要改",
+    "obvious_hint": true
+  },
+  "scene_prefix": {
+    "description": "场景提示前缀",
+    "type": "text",
+    "default": "【场景】",
+    "hint": "拼在用户要求前面，比如「【场景】」。留空则直接拼接"
+  },
+  "output_suffix": {
+    "description": "输出格式要求",
+    "type": "text",
+    "default": "只输出 SVG 代码，从 <svg 开始到 </svg> 结束。不要解释，不要 markdown 代码块。用 path 的 M/L/Q 命令。fill 填充，stroke 描边。画布 {size}x{size}，白底。",
+    "hint": "支持 {size} 变量，会自动替换成画布边长"
+  },
+  "enabled_groups": {
+    "description": "允许画图的群号",
+    "type": "list",
+    "default": [],
+    "hint": "留空表示不限制"
+  },
+  "allow_private": {
+    "description": "允许私聊画图",
+    "type": "bool",
+    "default": true
+  },
+  "canvas_size": {
+    "description": "画布边长（像素）",
+    "type": "int",
+    "default": 768,
+    "slider": {
+      "min": 512,
+      "max": 1536,
+      "step": 64
+    }
+  },
+  "texture_strength": {
+    "description": "蜡笔纹理强度",
+    "type": "float",
+    "default": 0.0,
+    "slider": {
+      "min": 0.0,
+      "max": 0.6,
+      "step": 0.02
+    },
+    "hint": "0 = 干净线条+噪点；0.18 轻微手绘笔触；0.30 明显蜡笔；0.45 粗糙油画棒"
+  },
+  "edge_jitter": {
+    "description": "线条抖动幅度（像素）",
+    "type": "float",
+    "default": 1.8,
+    "slider": {
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.2
+    },
+    "hint": "让线条歪歪扭扭，像手画的。设为 0 则完全笔直"
+  },
+  "grain_strength": {
+    "description": "纸张颗粒强度",
+    "type": "float",
+    "default": 14.0,
+    "slider": {
+      "min": 0.0,
+      "max": 40.0,
+      "step": 1.0
+    },
+    "hint": "0 = 纯白纸；14 轻微噪点；30 明显纸张纹理"
+  },
+  "stroke_rough": {
+    "description": "线条粗糙度",
+    "type": "float",
+    "default": 1.0,
+    "slider": {
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.1
+    }
+  },
+  "signature": {
+    "description": "画作签名",
+    "type": "string",
+    "default": "落落",
+    "hint": "显示在右下角，格式为「— 签名 日期」。留空则不签名"
+  },
+  "show_date": {
+    "description": "显示日期",
+    "type": "bool",
+    "default": true
+  },
+  "font_path": {
+    "description": "签名用的字体文件",
+    "type": "string",
+    "default": "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+  },
+  "gallery_dir": {
+    "description": "画册保存目录",
+    "type": "string",
+    "default": "data/plugin_data/astrbot_plugin_svg_doodle"
+  },
+  "gallery_limit": {
+    "description": "画册最多保留多少张",
+    "type": "int",
+    "default": 300,
+    "slider": {
+      "min": 20,
+      "max": 2000,
+      "step": 10
+    }
+  },
+  "max_retry": {
+    "description": "SVG 渲染失败时的重试次数",
+    "type": "int",
+    "default": 2,
+    "slider": {
+      "min": 0,
+      "max": 4,
+      "step": 1
+    }
+  }
+}
