@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="retro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简笔画涂鸦</title>
+<link rel="stylesheet" href="./assets/style.css">
+<script src="/api/plugin/page/bridge-sdk.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◈</span>
+      <span class="brand-name">简笔画涂鸦</span>
+      <span class="brand-ver">v1.0.0</span>
+    </div>
+    <div class="status-pills">
+      <span class="pill" id="pill-provider"><i></i><span>模型</span></span>
+      <span class="pill" id="pill-gallery"><i></i><span>画册</span></span>
+      <span class="pill" id="pill-canvas"><i></i><span>画布</span></span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="test"><span class="tab-idx">01</span>测试画图</button>
+    <button class="tab" data-tab="config"><span class="tab-idx">02</span>配置</button>
+    <button class="tab" data-tab="gallery"><span class="tab-idx">03</span>画册</button>
+    <button class="tab" data-tab="about"><span class="tab-idx">04</span>说明</button>
+  </nav>
+
+  <main>
+    <!-- ============ 01 测试画图 ============ -->
+    <section class="panel active" id="panel-test">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h2>画什么</h2></div>
+          <div class="card-body">
+            <textarea id="test-subject" rows="5" placeholder="例：坐在礁石上看海 / 戴着耳机听歌 / 和老大手拉手"></textarea>
+            <div class="chips" id="chips">
+              <button class="chip" data-v="坐在礁石上看海">坐礁石看海</button>
+              <button class="chip" data-v="戴着耳机听歌，闭着眼睛摇摆">听歌</button>
+              <button class="chip" data-v="和老大手拉手站在草地上">手拉手</button>
+              <button class="chip" data-v="撑着小伞在雨里散步">雨中散步</button>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btn-test">开始画</button>
+              <span class="hint" id="test-hint"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card preview-card">
+          <div class="card-head">
+            <h2>预览</h2>
+            <button class="btn ghost sm" id="btn-svg-toggle">看 SVG</button>
+          </div>
+          <div class="card-body preview-body">
+            <div class="preview-stage" id="preview-stage">
+              <div class="empty-state">
+                <div class="empty-icon">◇</div>
+                <p>还没画</p>
+              </div>
+            </div>
+            <pre class="svg-code" id="svg-code" hidden></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 配置 ============ -->
+    <section class="panel" id="panel-config">
+      <div class="config-layout">
+        <aside class="config-nav" id="config-nav"></aside>
+        <div class="config-main">
+          <div id="config-fields"></div>
+          <div class="config-actions">
+            <button class="btn primary" id="btn-save">保存配置</button>
+            <button class="btn ghost" id="btn-reset">重新读取</button>
+            <span class="hint" id="save-hint"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 画册 ============ -->
+    <section class="panel" id="panel-gallery">
+      <div class="gallery-grid" id="gallery-grid"></div>
+      <div class="empty-state big" id="gallery-empty">
+        <div class="empty-icon">◇</div>
+        <p>画册还是空的</p>
+      </div>
+    </section>
+
+    <!-- ============ 04 说明 ============ -->
+    <section class="panel" id="panel-about">
+      <div class="card">
+        <div class="card-head"><h2>用法</h2></div>
+        <div class="card-body prose">
+          <p><b>聊天里</b>：<code>/涂鸦 戴着耳机听歌</code>，她就会画一张发出来。</p>
+          <p><b>模型自动画</b>：她有一个 <code>draw_doodle</code> 工具，聊到需要画的时候会自己调。</p>
+          <p><b>翻旧画</b>：<code>recall_doodle</code> 工具，按关键词找以前画过的。</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>原理</h2></div>
+        <div class="card-body prose">
+          <p>模型不直接画像素，它写 <b>SVG 代码</b>（贝塞尔曲线 + 填充）。程序用 cairosvg 渲染成 PNG，再加纸张噪点、边缘抖动和签名。</p>
+          <p>这样线条连续、颜色干净，比逐图元拼贴更像简笔画。</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>常见调参</h2></div>
+        <div class="card-body prose">
+          <ul>
+            <li><b>画得太丑</b> → 改「角色外形描述」，用「圆脑袋…两个小圆点当眼睛…」这种画法描述，别写外貌形容词。</li>
+            <li><b>头和身体断开</b> → 不用改，「身体结构约束」默认已按图层顺序写死。</li>
+            <li><b>想要蜡笔感</b> → 「蜡笔纹理强度」调到 0.18~0.30。</li>
+            <li><b>线条太抖/太直</b> → 调「线条抖动幅度」，0 = 笔直。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</div>
+<script src="./assets/app.js"></script>
+</body>
+</html>
