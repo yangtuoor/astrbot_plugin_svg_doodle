@@ -147,7 +147,8 @@
   "font_path": {
     "description": "签名用的字体文件",
     "type": "string",
-    "default": "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    "default": "",
+    "hint": "留空=自动探测。按平台顺序找：Windows 微软雅黑/黑体/宋体 → macOS 苹方 → Linux Noto CJK。只有自动探测失败或想指定别的字体时才填绝对路径"
   },
   "gallery_dir": {
     "description": "画册保存目录",
