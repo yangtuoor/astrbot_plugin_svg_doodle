@@ -94,7 +94,20 @@ git clone https://github.com/yangtuoor/astrbot_plugin_svg_doodle.git
 ### 依赖
 
 ```bash
-pip install cairosvg numpy pillow
+pip install numpy pillow
+```
+
+**SVG 渲染后端**（三选一，插件会按可用性自动降级，不需要手动指定）：
+
+| 后端 | 平台 | 说明 |
+|---|---|---|
+| cairosvg | Linux / macOS 首选 | 最省资源。Windows 上要额外装 libcairo DLL，很多人装不上 |
+| 无头浏览器 | **Windows 推荐** | 自动找 Edge / Chrome / Brave，用 `--headless --screenshot` 截图。Windows 10/11 自带 Edge，开箱即用 |
+| rsvg-convert / inkscape / ImageMagick | 任意 | 系统装了就用 |
+
+```bash
+# Linux / macOS：想用 cairosvg 的话
+pip install cairosvg
 ```
 
 Ubuntu 上 cairosvg 还需要系统库：
@@ -103,12 +116,27 @@ Ubuntu 上 cairosvg 还需要系统库：
 apt install -y libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev
 ```
 
-**中文字体**（签名用，默认值指向 Noto）：
+**Windows 用户看这里**：`pip install cairosvg` 会成功装上 Python 包，但运行时常常报
+`OSError: Could not find module 'libcairo-2.dll'` 之类的错。**这是平台缺 DLL，不是插件的问题**。
+不用管它——插件会自动跳过 cairosvg，改用系统里的 Edge 无头截图渲染。只要你的机器有 Edge（Win10/11 默认就有），画图就能正常跑，不需要装 GTK 运行时。
+
+想确认当前用哪个后端，看启动日志里的 `可用后端: [...]`，或者调 `/画图状态`。
+
+**中文字体**（签名用，留空自动探测）：
+
+不填 `font_path` 时会按平台顺序自动找：
+
+- Windows：微软雅黑 `msyh.ttc` → 黑体 `simhei.ttf` → 宋体 `simsun.ttc` → 等线 `Deng.ttf`
+- macOS：苹方 `PingFang.ttc` → 冬青黑 `Hiragino Sans GB.ttc`
+- Linux：需要单独装
 
 ```bash
+# Linux
 apt install -y fonts-noto-cjk
-# 默认 font_path: /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+# 自动探测的内容：/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
 ```
+
+只有自动探测失败、或者你想指定别的字体时，才需要手动填 `font_path` 绝对路径。
 
 装好后重启 AstrBot，插件页会出现在侧边栏「简笔画涂鸦」。
 
@@ -353,6 +381,15 @@ AGPL-3.0
 ---
 
 ## 更新日志
+
+### v1.0.3
+
+- **Windows 适配**：`cairosvg` 在 Windows 上常因缺 `libcairo-2.dll` 直接 import 失败，现在改成可选依赖——装不上不会拖垮整个插件
+- 新增渲染后端自动降级链：`cairosvg` → 无头 Edge/Chrome 截图 → `rsvg-convert` / `inkscape` / ImageMagick。Windows 10/11 自带 Edge，开箱即用，不用装 GTK 运行时
+- 字体自动探测跨平台：Windows 微软雅黑/黑体/宋体/等线 → macOS 苹方/冬青黑 → Linux Noto CJK。以前写死 Linux 路径，Windows 上签名会变成豆腐块
+- `font_path` 默认值从 Linux 绝对路径改为空（留空=自动探测）
+- `terminate()` 先 commit 再 close，避免 Windows 上文件句柄残留导致插件目录删不掉
+- `render.py` 全部重写，`available_backends()` 可在日志里看到当前用哪个后端
 
 ### v1.0.2
 
