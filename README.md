@@ -376,7 +376,9 @@ function unwrap(r) {
 
 ## 许可
 
-AGPL-3.0
+[AGPL-3.0](LICENSE)
+
+本项目采用 GNU Affero General Public License v3.0 授权。完整条款见 [LICENSE](LICENSE)。
 
 ---
 
